@@ -174,7 +174,7 @@ void CompilationEngine::compileClassVarDec()
 	// type must be  int or char or boolean or className(identifier)
 	if ((this->tokenizer.keyWord() != "int") && 
 		(this->tokenizer.keyWord() != "char") &&
-		(this->tokenizer.keyWord() != "boolean") &
+		(this->tokenizer.keyWord() != "boolean") &&
 		(this->tokenizer.tokenType() != "identifier"))
 	{
 		std::cout<<"error, found a token but it's not a type"<<std::endl;
@@ -259,9 +259,130 @@ void CompilationEngine::compileClassVarDec()
 	this->output<<"	</classVarDec> ";
 }
 
+
 void CompilationEngine::compileSubroutineDec()
 {
+	this->output<<"	<subroutineDec> ";
+	
+	//must find a keyword
+	//we must find a keyword
+	if (this->tokenizer.tokenType() != "keyword")
+	{
+				//abort
+		std::cout<<"error expecting a keyword here"<<std::endl;
+		return;	
+	}
 
+	// must find constructor, method or function
+	if ((this->tokenizer.keyWord() == "constructor") || 
+		(this->tokenizer.keyWord() == "method") ||
+		(this->tokenizer.keyword() == "function"))
+	{
+		//write to output
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<" </keyword>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"error, found a keyword but it's not constructor, method or function"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find a keyword or an identifier
+	if ((this->tokenizer.tokenType() !=  "keyword") && (this->tokenizer.tokenType() != "identifier"))
+	{
+		std::cout<<"error, found a token but it's not keyword nor identifier"<<std::endl;
+		return;
+	}
+
+	//must find void or type
+	if ((this->tokenizer.keyWord() != "int") && 
+		(this->tokenizer.keyWord() != "char") &&
+		(this->tokenizer.keyWord() != "boolean") &&
+		(this->tokenizer.keyword() != "void") &&
+		(this->tokenizer.tokenType() != "identifier") )
+	{
+		std::cout<<"error, found a token but it's not a type"<<std::endl;
+		return;		
+	}
+
+	//the Type is a known type
+	if(this->tokenizer.tokenType() == "keyword")
+	{
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<" </keyword>"<<std::endl;
+	}
+	//the type is a className
+	else{
+		this->output<<"    <identifier> ";
+		this->output<<this->tokenizer.identifier();
+		this->output<<" </identifier>"<<std::endl;						
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find identifier as subroutine Name
+	if (this->tokenizer.tokenType() == "identifier")
+	{
+		//write to output
+		this->output<<"    <identifier> ";
+		this->output<<this->tokenizer.identifier();
+		this->output<<" </identifier>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"error, found a token but it's not an identifier subroutine name"<<std::endl;
+		return;		
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find (
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '('))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;		
+	}
+	else
+	{
+		std::cout<<"error didn't find opening ("<<std::endl;
+	}
+	
+	//advance
+	this->tokenizer.advance();
+	
+	//next is the Parameter List
+	this->compileParameterList();
+	
+	//next is the closing )
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ')'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;		
+	}
+	else
+	{
+		std::cout<<"error didn't find closing )"<<std::endl;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//next is the subroutine body
+	this->compileSubroutineBody();
+
+	this->output<<"	</subroutineDec> ";
 }
 
 void CompilationEngine::compileParameterList();
