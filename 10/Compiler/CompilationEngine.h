@@ -29,6 +29,8 @@ public:
 	void compileTerm();
 	void compileExpressionList();
 private:
+	void compileVarDecLL();
+	
 	std::ifstream input;
 	std::string currentToken;
 	std::string outputFileName;

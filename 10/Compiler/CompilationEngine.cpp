@@ -164,83 +164,9 @@ void CompilationEngine::compileClassVarDec()
 	//advance
 	this->tokenizer.advance();
 
-	//must find a keyword or an identifier
-	if ((this->tokenizer.tokenType() !=  "keyword") && (this->tokenizer.tokenType() != "identifier"))
-	{
-		std::cout<<"error, found a token but it's not keyword nor identifier"<<std::endl;
-		return;
-	}
-	
-	// type must be  int or char or boolean or className(identifier)
-	if ((this->tokenizer.keyWord() != "int") && 
-		(this->tokenizer.keyWord() != "char") &&
-		(this->tokenizer.keyWord() != "boolean") &&
-		(this->tokenizer.tokenType() != "identifier"))
-	{
-		std::cout<<"error, found a token but it's not a type"<<std::endl;
-		return;		
-	}
-	//the Type is a known type
-	if(this->tokenizer.tokenType() == "keyword")
-	{
-		this->output<<"    <keyword> ";
-		this->output<<this->tokenizer.keyword();
-		this->output<<" </keyword>"<<std::endl;
-	}
-	//the type is a className
-	else{
-		this->output<<"    <identifier> ";
-		this->output<<this->tokenizer.identifier();
-		this->output<<" </identifier>"<<std::endl;						
-	}
-	//advance
-	this->tokenizer.advance();
+	//varDecLL
+	this->compileVarDecLL();
 
-	//must find an identifier => VarName
-	if (this->tokenizer.tokenType() == "identifier")
-	{
-		//write to output
-		this->output<<"    <identifier> ";
-		this->output<<this->tokenizer.identifier();
-		this->output<<" </identifier>"<<std::endl;
-	}
-	else
-	{
-		std::cout<<"error, found a token but it's not an identifier varName"<<std::endl;
-		return;		
-	}
-	
-	//advance
-	this->tokenizer.advance();
-
-	//now looking for (, VarName)* construct
-	while ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ','))
-	{
-		//write symbol to output
-		tokenizerOutput<<"	<symbol> ";
-		tokenizerOutput<<tokenizer.symbol();
-		tokenizerOutput<<" </symbol>"<<std::endl;
-		
-		//advance
-		this->tokenizer.advance();
-
-		//must find a varName now
-		if (this->tokenizer.tokenType() == "identifier")
-		{
-			tokenizerOutput<<"	<identifier> ";
-			tokenizerOutput<<tokenizer.identifier();
-			tokenizerOutput<<" </identifier>"<<std::endl;	
-		}
-		else
-		{
-			std::cout<<"error: found a , but not a second varName"<<std::endl;
-			return;
-		}
-
-		//advance
-		this->tokenizer.advance();
-	}
-	
 	//must find end of line ;
 	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ';'))
 	{
@@ -382,29 +308,417 @@ void CompilationEngine::compileSubroutineDec()
 	//next is the subroutine body
 	this->compileSubroutineBody();
 
-	this->output<<"	</subroutineDec> ";
+	this->output<<"	</subroutineDec>"<<std::endl;
 }
 
-void CompilationEngine::compileParameterList();
+void CompilationEngine::compileParameterList()
+{
+	//start the parameter list
+	this->output<<"    <parameterList>"<<std::endl;
 
-void CompilationEngine::compileSubroutineBody();
+	//advance
+	this->tokenizer.advance();
 
-void CompilationEngine::compileVarDec();
+	//varDecLL
+	this->compileVarDecLL();
 
-void CompilationEngine::compileStatements();
+	//or we find the ) symbol
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ')'))
+	{
+		this->output<<"    </parameterList>"<<std::endl;	
+	}
 
-void CompilationEngine::compileLet();
+}
 
-void CompilationEngine::compileIf();
+void CompilationEngine::compileSubroutineBody()
+{
+	this->output<<"   <subroutineBody>"<<std::endl;
+	
+	//find the opening {
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '{'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+	}
+	else
+	{
+		//abort
+		std::cout<<"didn't find opening {"<<std::endl;
+		return;
+	}
 
-void CompilationEngine::compileWhile();
+	//advance
+	this->tokenizer.advance();
 
-void CompilationEngine::compileDo();
+	//varDec
+	this->compileVarDec();
 
-void CompilationEngine::compileReturn();
+	//advance
+	this->tokenizer.advance();
 
-void CompilationEngine::compileExpression();
+	//statements
+	this->compileStatements();
 
-void CompilationEngine::compileTerm();
+	//advance
+	this->tokenizer.advance();
+
+	//find the closing }
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '}'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+	}
+	else
+	{
+		//abort
+		std::cout<<"didn't find closing }"<<std::endl;
+		return;
+	}
+
+	this->output<<"   </subroutineBody>"<<std::endl;	
+}
+
+void CompilationEngine::compileVarDec()
+{
+	//this is to handle multiline variable declarations
+	// as all previous ones are single line
+	//while the first token is a type
+	//parse the variable declaration
+	while ((this->tokenizer.tokenType() == "keyword") || (this->tokenizer.tokenType() == "identifier"))
+	{
+		//the keyword must be a type
+		// type must be  int or char or boolean or className(identifier)
+		if ((this->tokenizer.keyWord() != "int") && 
+			(this->tokenizer.keyWord() != "char") &&
+			(this->tokenizer.keyWord() != "boolean") &&
+			(this->tokenizer.tokenType() != "identifier"))
+		{
+			std::cout<<"error, found a token but it's not a type"<<std::endl;
+			break;		
+		}
+
+		this->output<<"   <varDec>"<<std::endl;
+		
+		this->compileVarDecLL();
+
+		//must find end of line ;
+		if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ';'))
+		{
+			//write symbol to output
+			tokenizerOutput<<"	<symbol> ";
+			tokenizerOutput<<tokenizer.symbol();
+			tokenizerOutput<<" </symbol>"<<std::endl;		
+		}
+		else
+		{
+			//abort
+			std::cout<<"error didn't find end of line ; after classVarDec"<<std::endl;
+			break;
+		}
+		
+		this->output<<"   </varDec>"<<std::endl;	
+	}
+}
+
+//all variable declaration (class, param or in subroutine)
+// are the same except for the outer markups
+// and the end of the line ; or ) 
+void CompilationEngine::compileVarDecLL()
+{
+	//do we find the construct type varName
+	if ((this->tokenizer.tokenType() == "keyword") || (this->tokenizer.tokenType() == "identifier"))
+	{
+		//the keyword must be a type
+		// type must be  int or char or boolean or className(identifier)
+		if ((this->tokenizer.keyWord() != "int") && 
+			(this->tokenizer.keyWord() != "char") &&
+			(this->tokenizer.keyWord() != "boolean") &&
+			(this->tokenizer.tokenType() != "identifier"))
+		{
+			std::cout<<"error, found a token but it's not a type"<<std::endl;
+			return;		
+		}
+		//the Type is a known type
+		if(this->tokenizer.tokenType() == "keyword")
+		{
+			this->output<<"    <keyword> ";
+			this->output<<this->tokenizer.keyword();
+			this->output<<" </keyword>"<<std::endl;
+		}
+		//the type is a className
+		else{
+			this->output<<"    <identifier> ";
+			this->output<<this->tokenizer.identifier();
+			this->output<<" </identifier>"<<std::endl;						
+		}
+		//advance
+		this->tokenizer.advance();
+
+		//must find an identifier => VarName
+		if (this->tokenizer.tokenType() == "identifier")
+		{
+			//write to output
+			this->output<<"    <identifier> ";
+			this->output<<this->tokenizer.identifier();
+			this->output<<" </identifier>"<<std::endl;
+		}
+		else
+		{
+			std::cout<<"error, found a token but it's not an identifier varName"<<std::endl;
+			return;		
+		}
+		
+		//advance
+		this->tokenizer.advance();
+
+		//now looking for (, VarName)* construct
+		while((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ','))
+		{
+			//write symbol to output
+			tokenizerOutput<<"	<symbol> ";
+			tokenizerOutput<<tokenizer.symbol();
+			tokenizerOutput<<" </symbol>"<<std::endl;
+			
+			//advance
+			this->tokenizer.advance();
+
+			//must find a varName now
+			if(this->tokenizer.tokenType() == "identifier")
+			{
+				tokenizerOutput<<"	<identifier> ";
+				tokenizerOutput<<tokenizer.identifier();
+				tokenizerOutput<<" </identifier>"<<std::endl;	
+			}
+			else
+			{
+				std::cout<<"error: found a , but not a second varName"<<std::endl;
+				return;
+			}
+
+			//advance
+			this->tokenizer.advance();
+		}
+
+	}
+}
+void CompilationEngine::compileStatements()
+{
+	/*	Read the current keyword
+	*   if it's a statement start processing
+	*	if not just return
+	*/
+	this->output<<"   <statements>"<<std::endl;	
+	while(this->tokenizer.tokenType() == "keyword")
+	{
+		//current keyword is let
+		if(this->tokenizer.keyword() == "let")
+		{
+			this->compileLet();
+			
+			//advance
+			this->tokenizer.advance();
+		}
+
+		//current keyword is if
+		if(this->tokenizer.keyword() == "if")
+		{
+			this->compileIf();
+			
+			//advance
+			this->tokenizer.advance();
+		}
+
+		//current keyword is while
+		if(this->tokenizer.keyword() == "while")
+		{
+			this->compileWhile();
+		
+			//advance
+			this->tokenizer.advance();
+		}
+
+		//current keyword is do
+		if(this->tokenizer.keyword() == "do")
+		{
+			this->compileDo();
+		
+			//advance
+			this->tokenizer.advance();
+		}
+
+
+		//current keyword is return
+		if(this->tokenizer.keyword() =="return")
+		{
+			this->compileReturn();
+	
+			//advance
+			this->tokenizer.advance();
+		}
+
+	}
+
+	this->output<<"   </statements>"<<std::endl;
+}
+
+//let statement
+// let varName ('[' expression ']')? '=' expression ;
+void CompilationEngine::compileLet()
+{
+	this->output<<"   <letStatement>"<<std::endl;
+
+	//must find let keyword
+	if(this->tokenizer.keyword() == "let")
+	{
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<"    </keyword>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"keyword is not let"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	if(this->tokenizer.tokenType() == "identifier")
+	{
+		tokenizerOutput<<"	<identifier> ";
+		tokenizerOutput<<tokenizer.identifier();
+		tokenizerOutput<<" </identifier>"<<std::endl;			
+	}
+	else
+	{
+		std::cout<<"did not find identifier var name"<<std::endl;
+		return;		
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//we might find [expression] now
+	if((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '[')) 
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+		//advance
+		this->tokenizer.advance();
+
+		//next we must find an expression
+		this->compileExpression();
+		
+		//advance
+		this->tokenizer.advance();
+
+		//next we must find closing ]
+		if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ']'))
+		{
+			//write symbol to output
+			tokenizerOutput<<"	<symbol> ";
+			tokenizerOutput<<tokenizer.symbol();
+			tokenizerOutput<<" </symbol>"<<std::endl;
+
+
+		}
+		else
+		{
+			std::cout<<"error : found [ but not ]"<<std::endl;
+			return;
+		}
+
+		//advance
+		this->tokenizer.advance();
+	}
+
+	//next we must find the = symbol
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '='))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+
+	}
+	else
+	{
+		std::cout<<"error : = not found in letStatement"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find an expression
+	this->compileExpression();
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find ;
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ';'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+
+	}
+	else
+	{
+		std::cout<<"error : ; not found in letStatement"<<std::endl;
+		return;
+	}
+
+	this->output<<"   </letStatement>"<<std::endl; 
+}
+
+void CompilationEngine::compileIf()
+{
+
+	this->output<<"   <ifStatement>"<<std::endl;
+	this->output<<"   </ifStatement>"<<std::endl;
+}
+
+void CompilationEngine::compileWhile()
+{
+	this->output<<"   <whileStatement>"<<std::endl;
+	this->output<<"   </whileStatement>"<<std::endl;
+}
+
+void CompilationEngine::compileDo()
+{
+	this->output<<"   <doStatement>"<<std::endl;
+	this->output<<"   </doStatement>"<<std::endl;
+}
+
+void CompilationEngine::compileReturn()
+{
+	this->output<<"   <returnStatement>"<<std::endl;
+	this->output<<"   </returnStatement>"<<std::endl;
+}
+
+void CompilationEngine::compileExpression()
+{
+
+}
+
+void CompilationEngine::compileTerm()
+{
+
+}
 
 void CompilationEngine::compileExpressionList();
+{
+
+}
