@@ -683,28 +683,354 @@ void CompilationEngine::compileLet()
 	this->output<<"   </letStatement>"<<std::endl; 
 }
 
+//if (expression) { statements } else {statements}
 void CompilationEngine::compileIf()
 {
-
 	this->output<<"   <ifStatement>"<<std::endl;
+	//must find if keyword
+	if(this->tokenizer.keyword() == "if")
+	{
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<"    </keyword>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"keyword is not if"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//we must find ( now
+	if((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '(')) 
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"error didn't find ( in ifStatement"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find an expression
+	this->compileExpression();
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find )
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ')'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+	}
+	else
+	{
+		std::cout<<"error : ) not found in ifStatement"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find {
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '{'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+	}
+	else
+	{
+		std::cout<<"error : { not found in ifStatement"<<std::endl;
+		return;
+	}
+	
+	//advance
+	this->tokenizer.advance();
+
+	//might find statements
+	this->compileStatements();
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find }
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '}'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+	}
+	else
+	{
+		std::cout<<"error : } not found in ifStatement"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//can find else
+	if((this->tokenizer.tokenType() == "keyword") && (this->tokenizer.keyword()=="else"))
+	{
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<"    </keyword>"<<std::endl;
+
+		//advance
+		this->tokenizer.advance();
+
+		//must find {
+		if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '{'))
+		{
+			//write symbol to output
+			tokenizerOutput<<"	<symbol> ";
+			tokenizerOutput<<tokenizer.symbol();
+			tokenizerOutput<<" </symbol>"<<std::endl;
+
+		}
+		else
+		{
+			std::cout<<"error : { not found in elseStatement"<<std::endl;
+			return;
+		}
+
+		//advance
+		this->tokenizer.advance();
+
+		//might find statements
+		this->compileStatements();
+
+		//advance
+		this->tokenizer.advance();
+
+		//must find }		
+		if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '}'))
+		{
+			//write symbol to output
+			tokenizerOutput<<"	<symbol> ";
+			tokenizerOutput<<tokenizer.symbol();
+			tokenizerOutput<<" </symbol>"<<std::endl;
+
+		}
+		else
+		{
+			std::cout<<"error : } not found in elseStatement"<<std::endl;
+			return;
+		}
+	}
+
 	this->output<<"   </ifStatement>"<<std::endl;
 }
 
+//while (expression){statements}
 void CompilationEngine::compileWhile()
 {
 	this->output<<"   <whileStatement>"<<std::endl;
+	
+	//must find if keyword
+	if(this->tokenizer.keyword() == "while")
+	{
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<"    </keyword>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"keyword is not while"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//we must find ( now
+	if((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '(')) 
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"error didn't find ( in whileStatement"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find an expression
+	this->compileExpression();
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find )
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ')'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+	}
+	else
+	{
+		std::cout<<"error : ) not found in whileStatement"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find {
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '{'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+	}
+	else
+	{
+		std::cout<<"error : { not found in whileStatement"<<std::endl;
+		return;
+	}
+	
+	//advance
+	this->tokenizer.advance();
+
+	//might find statements
+	this->compileStatements();
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find }
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == '}'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+	}
+	else
+	{
+		std::cout<<"error : } not found in whileStatement"<<std::endl;
+		return;
+	}
+
 	this->output<<"   </whileStatement>"<<std::endl;
 }
-
+//do subroutineCall;
 void CompilationEngine::compileDo()
 {
 	this->output<<"   <doStatement>"<<std::endl;
+	
+	//must find do
+	if(this->tokenizer.keyword() == "do")
+	{
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<"    </keyword>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"keyword is not do"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();	
+
+	//must find subroutineCall
+	this->comppileSubroutineCall();
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find ;
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ';'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+
+	}
+	else
+	{
+		std::cout<<"error : ; not found in doStatement"<<std::endl;
+		return;
+	}
+
 	this->output<<"   </doStatement>"<<std::endl;
 }
 
+//return expression ;
 void CompilationEngine::compileReturn()
 {
 	this->output<<"   <returnStatement>"<<std::endl;
+
+	//must find if keyword
+	if(this->tokenizer.keyword() == "return")
+	{
+		this->output<<"    <keyword> ";
+		this->output<<this->tokenizer.keyword();
+		this->output<<"    </keyword>"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"keyword is not return"<<std::endl;
+		return;
+	}
+
+	//advance
+	this->tokenizer.advance();
+
+	//might find expression
+	this->compileExpression();
+
+	//advance
+	this->tokenizer.advance();
+
+	//must find ;
+	if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ';'))
+	{
+		//write symbol to output
+		tokenizerOutput<<"	<symbol> ";
+		tokenizerOutput<<tokenizer.symbol();
+		tokenizerOutput<<" </symbol>"<<std::endl;
+
+
+	}
+	else
+	{
+		std::cout<<"error : ; not found in returnStatement"<<std::endl;
+		return;
+	}
+
 	this->output<<"   </returnStatement>"<<std::endl;
 }
 
