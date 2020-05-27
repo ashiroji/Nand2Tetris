@@ -1,4 +1,4 @@
-/* -lboost_system -lboost_filesystem*/
+/* -lboost_system -lboost_filesystem */
 #include "Tokenizer.h"
 #include <iostream>
 #include <fstream>
@@ -6,76 +6,17 @@
 #include <bitset>
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
+#include "CompilationEngine.h"
 #include <cstdio>
 
 namespace fs = boost::filesystem;
 
 void runner(Tokenizer& tokenizer, std::string fileName)
 {
-	std::string cType;
-	std::ofstream tokenizerOutput(fileName+"T.xml");
+	std::string outputFileName = fileName + ".xml";
+	CompilationEngine compiler(fileName, outputFileName);
 
-	tokenizerOutput<<"<tokens>"<<std::endl;
-	
-	do{
-		tokenizer.advance(); //read next command
-		cType = tokenizer.tokenType();//extract command type
-		std::cout<<"current Token3 : "<<tokenizer.getCurrentToken()<<std::endl;
-		std::cout<<"token type: "<<cType<<std::endl;
-		if(cType == "keyword")
-		{
-				tokenizerOutput<<"<keyword> ";
-				tokenizerOutput<<tokenizer.keyWord();
-				tokenizerOutput<<" </keyword>"<<std::endl;
-		}
-		else if (cType == "symbol")
-		{
-				tokenizerOutput<<"<symbol> ";
-				if('<' == tokenizer.symbol())
-				{
-					tokenizerOutput<<"&lt;";
-				}
-				else if ('>' == tokenizer.symbol())
-				{
-					tokenizerOutput<<"&gt;";
-				}
-				else if('&' == tokenizer.symbol())
-				{
-					tokenizerOutput<<"&amp;";
-				}
-				else if('\"' == tokenizer.symbol())
-				{
-					tokenizerOutput<<"&quot";
-				}
-				else
-				{
-					tokenizerOutput<<tokenizer.symbol();
-				}
-				tokenizerOutput<<" </symbol>"<<std::endl;;
-		}
-		else if (cType == "int")
-		{
-				tokenizerOutput<<"<integerConstant> ";
-				tokenizerOutput<<tokenizer.intVal();
-				tokenizerOutput<<" </integerConstant>"<<std::endl;;
-		}
-		else if (cType == "string")
-		{
-				tokenizerOutput<<"<stringConstant> ";
-				tokenizerOutput<<tokenizer.stringVal();
-				tokenizerOutput<<" </stringConstant>"<<std::endl;;
-		}
-		else if (cType == "identifier")
-		{
-				tokenizerOutput<<"<identifier> ";
-				tokenizerOutput<<tokenizer.identifier();				
-				tokenizerOutput<<"</identifier>"<<std::endl;;
-		}
-
-	}while(tokenizer.hasMoreTokens());
-
-	tokenizerOutput<<"</tokens>"<<std::endl;
-	tokenizerOutput.close();
+	compiler.compileClass();
 }
 void handleFile(std::string fileName)
 {

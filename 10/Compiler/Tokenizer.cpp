@@ -29,7 +29,7 @@ Tokenizer::~Tokenizer()
 	this->input.close();
 }
 
-void init(std::string fileName)
+void Tokenizer::init(std::string fileName)
 {
 	this->fileName = fileName;
 	this->input.open(this->fileName.c_str());
@@ -55,7 +55,7 @@ void Tokenizer::advance()
 
 	if (this->nextToken != "")
 	{
-		std::cout<<"nextToken7 = "<<this->nextToken<<std::endl;
+		//std::cout<<"nextToken = "<<this->nextToken<<std::endl;
 		if (this->nextToken.length()>1)
 		{
 			/*possibilites : () => symbol symbol
@@ -74,7 +74,7 @@ void Tokenizer::advance()
 	        		//find the end of the string constant : "
 	        		int endPos = line.rfind('\"');
 	        		this->currentToken = this->nextToken + line.substr(0, endPos+1);
-	        		std::cout<<"string constant 2 = "<<this->currentToken<<std::endl;
+	      //  		std::cout<<"string constant 2 = "<<this->currentToken<<std::endl;
 	        		this->nextToken = line.substr(endPos+1);
 		                this->nextToken = trim_right_copy(this->nextToken);
 	        	}			            	
@@ -90,16 +90,16 @@ void Tokenizer::advance()
 				int i=0;
 				while(isalpha(this->nextToken[i]))
 				{
-					std::cout<<"copying"<<std::endl;
+			//		std::cout<<"copying"<<std::endl;
 					this->currentToken.push_back(this->nextToken[i]);
-					std::cout<<"currentToken5 = "<<this->currentToken<<std::endl;
+			//		std::cout<<"currentToken5 = "<<this->currentToken<<std::endl;
 					i++;
 				}
 				
 				if (i == this->nextToken.length())
 				{
-					std::cout<<"currentToken4 = "<<this->currentToken<<std::endl;
-					std::cout<<"nextToken4 = "<<this->nextToken<<std::endl;	
+			//		std::cout<<"currentToken4 = "<<this->currentToken<<std::endl;
+			//		std::cout<<"nextToken4 = "<<this->nextToken<<std::endl;	
 					this->nextToken.clear();
 				}
 				else
@@ -107,19 +107,19 @@ void Tokenizer::advance()
 					this->nextToken = this->nextToken.substr(i);
 				}
 			}
-			std::cout<<"currentToken1 = "<<this->currentToken<<std::endl;
-			std::cout<<"nextToken1 = "<<this->nextToken<<std::endl;			
+		//	std::cout<<"currentToken1 = "<<this->currentToken<<std::endl;
+		//	std::cout<<"nextToken1 = "<<this->nextToken<<std::endl;			
 			return;
 		}
 		this->currentToken = this->nextToken;
-		std::cout<<"currentToken2 = "<<this->currentToken<<std::endl;
-		std::cout<<"nextToken2 = "<<this->nextToken<<std::endl;		
+		//std::cout<<"currentToken2 = "<<this->currentToken<<std::endl;
+		//std::cout<<"nextToken2 = "<<this->nextToken<<std::endl;		
 		this->nextToken.clear();
 		return;
 	}
 	while(this->input >> word) 
 	{
-		std::cout<<"current word : "<<word<<std::endl;
+		//std::cout<<"current word : "<<word<<std::endl;
 		//if single line comment => skip to next line
 		if(('/' == word[0]) && ('/' == word[1]))
 		{
@@ -208,7 +208,7 @@ void Tokenizer::advance()
 			        		//find the end of the string constant : "
 			        		int endPos = line.rfind('\"');
 			        		this->currentToken = word + line.substr(0, endPos+1);
-			        		std::cout<<"string constant = "<<this->currentToken<<std::endl;
+			  //      		std::cout<<"string constant = "<<this->currentToken<<std::endl;
 			        		this->nextToken = line.substr(endPos+1);
 	 		                this->nextToken = trim_right_copy(this->nextToken);
 			        	}	
@@ -225,14 +225,15 @@ void Tokenizer::advance()
 	        }
  	        if (this->currentToken != "")
 	        {
-	        	std::cout<<"currentToken6 = "<<this->currentToken<<std::endl;
-				std::cout<<"nextToken6 = "<<this->nextToken<<std::endl;	
+	        	//std::cout<<"currentToken1 = "<<this->currentToken<<std::endl;
+				//std::cout<<"nextToken1 = "<<this->nextToken<<std::endl;	
 	        	break;
 	        }
 	        else
 	        {
 				//else word is to be processed as is
 				this->currentToken = word;
+				//std::cout<<"currentToken = "<<this->currentToken<<std::endl;
 				break;
 	        }
         }
@@ -249,42 +250,49 @@ std::string Tokenizer::tokenType()
 		if ((this->currentToken == "class") or (this->currentToken == "constructor") 
 			or (this->currentToken == "function"))
 		{
+			this->__keyword = this->currentToken;
 			return ("keyword");
 		}
 
 		if ((this->currentToken == "method") or (this->currentToken == "field") 
 			or (this->currentToken == "static"))
 		{
+			this->__keyword = this->currentToken;
 		  	return ("keyword");
 		}
 
 		if ((this->currentToken == "var") or (this->currentToken == "int")
 			or (this->currentToken == "char"))
 		{
+			this->__keyword = this->currentToken;
 		  	return ("keyword");
 		}
 
 		if ((this->currentToken == "boolean") or (this->currentToken == "void")
 			or (this->currentToken == "true"))
 		{
+			this->__keyword = this->currentToken;
 		  	return ("keyword");
 		}
 
 		if ((this->currentToken == "false") or (this->currentToken == "null")
 			or (this->currentToken == "this"))
 		{
+			this->__keyword = this->currentToken;
 		  	return ("keyword");
 		}
 
 		if ((this->currentToken == "let") or (this->currentToken == "do") 
 			or (this->currentToken == "if"))
 		{
+			this->__keyword = this->currentToken;
 		  	return ("keyword");
 		}
 
 		if ((this->currentToken == "else") or (this->currentToken == "while")
 			or (this->currentToken == "return"))
 		{
+			this->__keyword = this->currentToken;
 		  	return ("keyword");
 		}   
 
@@ -293,40 +301,47 @@ std::string Tokenizer::tokenType()
 		if ((this->currentToken == "{") or (this->currentToken == "}") 
 			or (this->currentToken == "("))
 		{
+			this->__symbol = this->currentToken[0];
 		  	return ("symbol");
 		}
 
 		if ((this->currentToken == ")") or (this->currentToken == "[") 
 			or (this->currentToken == "]"))
 		{
+			this->__symbol = this->currentToken[0];
 		  	return ("symbol");
 		}
 
 		if ((this->currentToken == ".") or (this->currentToken == ",") or (this->currentToken == ";"))
 		{
+			this->__symbol = this->currentToken[0];
 		  	return ("symbol");
 		}
 
 		if ((this->currentToken == "+") or (this->currentToken == "-") 
 			or (this->currentToken == "*"))
 		{
+			this->__symbol = this->currentToken[0];
 		  	return ("symbol");
 		}
 
 		if ((this->currentToken == "/") or (this->currentToken == "&")
 			or (this->currentToken == "|"))
 		{
+			this->__symbol = this->currentToken[0];
 		  	return ("symbol");
 		}
 
 		if ((this->currentToken == ">") or (this->currentToken == "<")
 			or (this->currentToken == "="))
 		{
+			this->__symbol = this->currentToken[0];
 		  	return ("symbol");
 		}
 
 		if (this->currentToken == "~")
 		{
+			this->__symbol = this->currentToken[0];
 		  	return ("symbol");
 		}
 
@@ -336,21 +351,24 @@ std::string Tokenizer::tokenType()
 		{
 			if(isdigit(c))
 				{
-					std::cout<<"c = "<<c<<std::endl;
+					//std::cout<<"c = "<<c<<std::endl;
 					len++;	
 				}
 		}
 		if (len == this->currentToken.length())
 		{
+			this->__intConstant = atoi(this->currentToken.c_str());
 			return ("int");
 		}
 		/* string */
 		if ((this->currentToken.find('\"') != std::string::npos))
 		{
+			this->__stringConstant = this->currentToken.substr(1, this->currentToken.length()-2);
 			return("string");
 		}
 
 		//if we arrive here it's an identifier
+		this->__identifier = this->currentToken;
 		return("identifier");
 	}
 	return("no_token");
@@ -358,27 +376,27 @@ std::string Tokenizer::tokenType()
 
 std::string Tokenizer::keyWord()
 {
-	return this->currentToken;
+	return this->__keyword;
 }
 
 char Tokenizer::symbol()
 {
-	return this->currentToken[0];
+	return this->__symbol;
 }
 
 std::string Tokenizer::identifier()
 {
-	return this->currentToken;
+	return this->__identifier;
 }
 
 int Tokenizer::intVal()
 {
-	return atoi(this->currentToken.c_str());
+	return this->__intConstant;
 }
 
 std::string Tokenizer::stringVal()
 {
-	return this->currentToken.substr(1, this->currentToken.length()-2);
+	return this->__stringConstant;
 }
 
 std::string Tokenizer::getCurrentToken()

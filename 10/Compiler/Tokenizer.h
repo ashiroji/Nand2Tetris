@@ -29,6 +29,12 @@ private:
 	std::string currentToken;
 	std::string nextToken;
 	std::string fileName;
+	std::string __keyword;
+	std::string __identifier;
+	std::string __stringConstant;
+	char __symbol;
+	int __intConstant;
+
 	inline std::string trim_right_copy(const std::string& s, const std::string& delimiters);		
 };
 
