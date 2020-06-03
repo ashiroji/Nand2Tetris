@@ -964,7 +964,8 @@ void CompilationEngine::compileExpression(int indentLevel)
 	while ((this->tokenizer.tokenType()== "symbol") && (this->tokenizer.symbol() != ';') 
 		&& (this->tokenizer.symbol() != '(') && (this->tokenizer.symbol() != ')')
 		&& (this->tokenizer.symbol() != '[') && (this->tokenizer.symbol() != ']')
-		&& (this->tokenizer.symbol() != '{') && (this->tokenizer.symbol() != '}'))
+		&& (this->tokenizer.symbol() != '{') && (this->tokenizer.symbol() != '}')
+		&& (this->tokenizer.symbol() != ','))
 	{
 
 		this->compileOp(indentLevel + 1);
@@ -996,38 +997,38 @@ void CompilationEngine::compileTerm(int indentLevel)
 	}
 
 	//string Constant
-	if (this->tokenizer.tokenType() == "string")
+	else if (this->tokenizer.tokenType() == "string")
 	{
 		this->writeMKToFile(this->tokenizer.stringVal(), "stringConstant", indentLevel + 1);
 	}
 
 	//keyWord Constant : true, false, null, this
-	if ((this->tokenizer.tokenType() == "keyword") 
+	else if ((this->tokenizer.tokenType() == "keyword") 
 		&& (this->tokenizer.keyWord() == "true"))
 	{
-		this->writeMKToFile(this->tokenizer.keyWord(), "keyWord", indentLevel + 1);
+		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
 	}
 
-	if ((this->tokenizer.tokenType() == "keyword") 
+	else if ((this->tokenizer.tokenType() == "keyword") 
 		&& (this->tokenizer.keyWord() == "false"))
 	{
-		this->writeMKToFile(this->tokenizer.keyWord(), "keyWord", indentLevel + 1);
+		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
 	}
 
-	if ((this->tokenizer.tokenType() == "keyword") 
+	else if ((this->tokenizer.tokenType() == "keyword") 
 		&& (this->tokenizer.keyWord() == "null"))
 	{
-		this->writeMKToFile(this->tokenizer.keyWord(), "keyWord", indentLevel + 1);
+		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
 	}
 
-	if ((this->tokenizer.tokenType() == "keyword") 
+	else if ((this->tokenizer.tokenType() == "keyword") 
 		&& (this->tokenizer.keyWord() == "this"))
 	{
-		this->writeMKToFile(this->tokenizer.keyWord(), "keyWord", indentLevel + 1);
+		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
 	}	
 
 	//varName, varName[], subroutineCall
-	if ((this->tokenizer.tokenType() == "identifier"))
+	else if ((this->tokenizer.tokenType() == "identifier"))
 	{
 		// varName
 		this->writeMKToFile(this->tokenizer.identifier(), "identifier", indentLevel + 1);
@@ -1036,7 +1037,7 @@ void CompilationEngine::compileTerm(int indentLevel)
 		this->advance();
 
 		//if this token is [ or . or (
-		if(this->tokenizer.tokenType() == "symbol")
+		if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ','))
 		{
 			if(this->tokenizer.symbol() == '[')
 			{
@@ -1095,7 +1096,7 @@ void CompilationEngine::compileTerm(int indentLevel)
 	}
 	
 	//(expression)
-	if((this->tokenizer.tokenType()=="symbol") 
+	else if((this->tokenizer.tokenType()=="symbol") 
 		&& (this->tokenizer.symbol()=='('))
 	{
 		this->writeMKToFile(this->tokenizer.symbol(), "symbol", indentLevel + 1);
@@ -1117,7 +1118,7 @@ void CompilationEngine::compileTerm(int indentLevel)
 	}
 
 	//unaryOp term
-	if((this->tokenizer.tokenType()=="symbol") 
+	else if((this->tokenizer.tokenType()=="symbol") 
 		&& ((this->tokenizer.symbol()=='-') || (this->tokenizer.symbol()=='~')))
 	{
 		//unaryOp
@@ -1143,6 +1144,22 @@ void CompilationEngine::compileExpressionList(int indentLevel)
 	{
 		this->compileExpression(indentLevel+1);
 
+		//do we need this advance?
+		if ((this->tokenizer.tokenType() == "symbol") &&
+			(this->tokenizer.symbol() == ')'))
+		{
+			this->writeCloseMK("expressionList", indentLevel);
+			return;
+		}
+		if ((this->tokenizer.tokenType() == "symbol") 
+			&& (this->tokenizer.symbol() == ','))
+		{
+			//do nothing, i'll find a better solution
+		}
+		else
+		{
+			this->advance();
+		}
 		//might find ,
 		while ((this->tokenizer.tokenType() == "symbol") 
 			&& (this->tokenizer.symbol() == ','))
