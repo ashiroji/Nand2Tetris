@@ -459,7 +459,9 @@ void CompilationEngine::compileVarDecLL(int indentLevel)
 		{
 			std::cout<<"compileVarDec error, found a token but it's not an identifier varName"<<std::endl;	
 		}
-		//now looking for (, VarName)* construct
+
+		//now looking for (, type VarName)* construct
+		// or (, varName)* construct
 		while((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ','))
 		{
 			//write symbol to output
@@ -468,21 +470,31 @@ void CompilationEngine::compileVarDecLL(int indentLevel)
 			//skip the comments
 			this->advance();
 
-			//must find a varName now
-			if(this->tokenizer.tokenType() == "identifier")
-			{	
-				this->writeMKToFile(this->tokenizer.identifier(), "identifier", indentLevel);				
-
-				//skip the comments
+			//must find identifier or type + identifier
+			while ((this->tokenizer.tokenType() == "keyword") || (this->tokenizer.tokenType() == "identifier"))
+			{
+				//the keyword must be a type
+				// type must be  int or char or boolean or className(identifier)
+				if ((this->tokenizer.keyWord() != "int") && 
+					(this->tokenizer.keyWord() != "char") &&
+					(this->tokenizer.keyWord() != "boolean") &&
+					(this->tokenizer.tokenType() != "identifier"))
+				{
+					std::cout<<"compileVarDec error, found a token but it's not a type"<<std::endl;		
+				}
+				//the Type is a known type
+				if(this->tokenizer.tokenType() == "keyword")
+				{
+					this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel);
+				}
+				//the type is a className
+				else
+				{
+					this->writeMKToFile(this->tokenizer.identifier(), "identifier", indentLevel);						
+				}
 				this->advance();
 			}
-			else
-			{
-				std::cout<<"compileVarDec error: found a , but not a second varName"<<std::endl;
-			}
-
 		}
-
 	}
 }
 void CompilationEngine::compileStatements(int indentLevel)
@@ -506,14 +518,14 @@ void CompilationEngine::compileStatements(int indentLevel)
 		}
 
 		//current keyword is if
-		if(this->tokenizer.keyWord() == "if")
+		else if(this->tokenizer.keyWord() == "if")
 		{
 			this->compileIf(indentLevel+1);
 			//exit advancing done in compileIf
 		}
 
 		//current keyword is while
-		if(this->tokenizer.keyWord() == "while")
+		else if(this->tokenizer.keyWord() == "while")
 		{
 			this->compileWhile(indentLevel+1);
 		
@@ -522,7 +534,7 @@ void CompilationEngine::compileStatements(int indentLevel)
 		}
 
 		//current keyword is do
-		if(this->tokenizer.keyWord() == "do")
+		else if(this->tokenizer.keyWord() == "do")
 		{
 			this->compileDo(indentLevel+1);
 		
@@ -532,16 +544,22 @@ void CompilationEngine::compileStatements(int indentLevel)
 
 
 		//current keyword is return
-		if(this->tokenizer.keyWord() =="return")
+		else if(this->tokenizer.keyWord() =="return")
 		{
 			this->compileReturn(indentLevel+1);
 	
 			//skip the comments
 			this->advance();
 		}
-		
-		std::cout<<"compileStatements currentToken1 : "<<this->tokenizer.getCurrentToken()<<std::endl;
-		std::cout<<"compileStatements tokenType : "<<this->tokenizer.tokenType()<<std::endl;
+
+		else
+		{
+			std::cout<<"compileStatements error"<<std::endl;
+			std::cout<<"compileStatements currentToken1 : "<<this->tokenizer.getCurrentToken()<<std::endl;
+			std::cout<<"compileStatements tokenType : "<<this->tokenizer.tokenType()<<std::endl;
+			break;
+		}
+
 	}
 
 	this->writeCloseMK("statements", indentLevel);
