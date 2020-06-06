@@ -1007,6 +1007,9 @@ void CompilationEngine::compileTerm(int indentLevel)
 	else if (this->tokenizer.tokenType() == "string")
 	{
 		this->writeMKToFile(this->tokenizer.stringVal(), "stringConstant", indentLevel + 1);
+
+		//skip the comments
+		this->advance();
 	}
 
 	//keyWord Constant : true, false, null, this
@@ -1014,24 +1017,34 @@ void CompilationEngine::compileTerm(int indentLevel)
 		&& (this->tokenizer.keyWord() == "true"))
 	{
 		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
+		
+		//skip the comments
+		this->advance();
 	}
 
 	else if ((this->tokenizer.tokenType() == "keyword") 
 		&& (this->tokenizer.keyWord() == "false"))
 	{
 		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
+		//skip the comments
+		this->advance();
 	}
 
 	else if ((this->tokenizer.tokenType() == "keyword") 
 		&& (this->tokenizer.keyWord() == "null"))
 	{
 		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
+		//skip the comments
+		this->advance();
 	}
 
 	else if ((this->tokenizer.tokenType() == "keyword") 
 		&& (this->tokenizer.keyWord() == "this"))
 	{
 		this->writeMKToFile(this->tokenizer.keyWord(), "keyword", indentLevel + 1);
+		
+		//skip the comments
+		this->advance();
 	}	
 
 	//varName, varName[], subroutineCall
@@ -1118,6 +1131,8 @@ void CompilationEngine::compileTerm(int indentLevel)
 			&& (this->tokenizer.symbol()==')'))
 		{
 			this->writeMKToFile(this->tokenizer.symbol(), "symbol", indentLevel + 1);
+			//skip the comments
+			this->advance();
 		}
 		else
 		{
