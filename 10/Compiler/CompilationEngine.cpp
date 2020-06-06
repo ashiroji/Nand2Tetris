@@ -36,7 +36,7 @@ void CompilationEngine::compileClass()
 	if (this->tokenizer.tokenType() != "keyword")
 	{
 		//abort
-		std::cout<<"compileClass error :  didn't find class keyword"<<std::endl;
+		std::cout<<"compileClass ERROR :  didn't find class keyword"<<std::endl;
 	}
 
 	// the keyword must be class
@@ -51,7 +51,7 @@ void CompilationEngine::compileClass()
 	else 
 	{
 		//abort
-		std::cout<<"compileClass error: found a keyword but it's not class"<<std::endl;
+		std::cout<<"compileClass ERROR: found a keyword but it's not class"<<std::endl;
 	}	
 
 	//next find the class name which is an identifier
@@ -66,7 +66,7 @@ void CompilationEngine::compileClass()
 	else
 	{
 		//abort
-		std::cout<<"compileClass error : didn't find identifier after class keyword"<<std::endl;
+		std::cout<<"compileClass ERROR : didn't find identifier after class keyword"<<std::endl;
 	}		
 
 	
@@ -82,7 +82,7 @@ void CompilationEngine::compileClass()
 	else
 	{
 		//abort
-		std::cout<<"compileClass error didn't find { symbol after class name"<<std::endl;
+		std::cout<<"compileClass ERROR didn't find { symbol after class name"<<std::endl;
 	}
 
 	/*from here on treat the symbols as needed by calling 
@@ -116,6 +116,11 @@ void CompilationEngine::compileClass()
 				//skip the comments
 				this->advance();
 			}
+			else
+			{
+				std::cout<<"compileClass ERROR : found wrong keyword"<<std::endl;
+				break;
+			}
 		}
 		else if ((this->tokenizer.tokenType() == "symbol") && 
 			(this->tokenizer.symbol() == '}'))
@@ -128,7 +133,7 @@ void CompilationEngine::compileClass()
 		else
 		{
 			//abort
-			std::cout<<"compileClass error : found nothing after the opening { not even the closing }"<<std::endl;
+			std::cout<<"compileClass ERROR : found nothing after the opening { not even the closing }"<<std::endl;
 			break;			
 		}
 
@@ -145,7 +150,7 @@ void CompilationEngine::compileClassVarDec()
 	if (this->tokenizer.tokenType() != "keyword")
 	{
 		//abort
-		std::cout<<"compileClassVarDec error expecting a keyword here"<<std::endl;	
+		std::cout<<"compileClassVarDec ERROR expecting a keyword here"<<std::endl;	
 	}
 
 	//we must find one the following keywords
@@ -160,7 +165,7 @@ void CompilationEngine::compileClassVarDec()
 	}
 	else
 	{
-		std::cout<<"compileClassVarDec error, found a keyword but it's not static nor field"<<std::endl;
+		std::cout<<"compileClassVarDec ERROR, found a keyword but it's not static nor field"<<std::endl;
 	}	
 
 	//varDecLL
@@ -175,7 +180,7 @@ void CompilationEngine::compileClassVarDec()
 	else
 	{
 		//abort
-		std::cout<<"compileClassVarDec error didn't find end of line ; after classVarDec"<<std::endl;
+		std::cout<<"compileClassVarDec ERROR didn't find end of line ; after classVarDec"<<std::endl;
 	}
 
 	this->writeCloseMK("classVarDec", 1);
@@ -190,7 +195,7 @@ void CompilationEngine::compileSubroutineDec()
 	if (this->tokenizer.tokenType() != "keyword")
 	{
 		//abort
-		std::cout<<"compileSubroutineDec error expecting a keyword here"<<std::endl;
+		std::cout<<"compileSubroutineDec ERROR expecting a keyword here"<<std::endl;
 	}
 
 	// must find constructor, method or function
@@ -206,13 +211,13 @@ void CompilationEngine::compileSubroutineDec()
 	}
 	else
 	{
-		std::cout<<"compileSubroutineDec error, found a keyword but it's not constructor, method or function"<<std::endl;
+		std::cout<<"compileSubroutineDec ERROR, found a keyword but it's not constructor, method or function"<<std::endl;
 	}
 
 	//must find a keyword or an identifier
 	if ((this->tokenizer.tokenType() !=  "keyword") && (this->tokenizer.tokenType() != "identifier"))
 	{
-		std::cout<<"compileSubroutineDec error, found a token but it's not keyword nor identifier"<<std::endl;
+		std::cout<<"compileSubroutineDec ERROR, found a token but it's not keyword nor identifier"<<std::endl;
 	}
 
 	//must find void or type
@@ -222,7 +227,7 @@ void CompilationEngine::compileSubroutineDec()
 		(this->tokenizer.keyWord() != "void") &&
 		(this->tokenizer.tokenType() != "identifier") )
 	{
-		std::cout<<"compileSubroutineDec error, found a token but it's not a type"<<std::endl;		
+		std::cout<<"compileSubroutineDec ERROR, found a token but it's not a type"<<std::endl;		
 	}
 
 	//the Type is a known type
@@ -249,7 +254,7 @@ void CompilationEngine::compileSubroutineDec()
 	}
 	else
 	{
-		std::cout<<"compileSubroutineDec error, found a token but it's not an identifier subroutine name"<<std::endl;	
+		std::cout<<"compileSubroutineDec ERROR, found a token but it's not an identifier subroutine name"<<std::endl;	
 	}
 
 	//must find (
@@ -263,7 +268,7 @@ void CompilationEngine::compileSubroutineDec()
 	}
 	else
 	{
-		std::cout<<"compileSubroutineDec error didn't find opening ("<<std::endl;
+		std::cout<<"compileSubroutineDec ERROR didn't find opening ("<<std::endl;
 	}
 	
 	//next is the Parameter List
@@ -280,7 +285,7 @@ void CompilationEngine::compileSubroutineDec()
 	}
 	else
 	{
-		std::cout<<"compileSubroutineDec error didn't find closing )"<<std::endl;
+		std::cout<<"compileSubroutineDec ERROR didn't find closing )"<<std::endl;
 	}
 
 	//next is the subroutine body
@@ -324,7 +329,7 @@ void CompilationEngine::compileSubroutineBody()
 	else
 	{
 		//abort
-		std::cout<<"compileSubroutineBody error didn't find opening {"<<std::endl;
+		std::cout<<"compileSubroutineBody ERROR didn't find opening {"<<std::endl;
 	}
 
 	//varDec
@@ -358,7 +363,7 @@ void CompilationEngine::compileSubroutineBody()
 	else
 	{
 		//abort
-		std::cout<<"compileSubroutineBody error didn't find closing }"<<std::endl;
+		std::cout<<"compileSubroutineBody ERROR didn't find closing }"<<std::endl;
 	}
 
 	this->writeCloseMK("subroutineBody", 2);	
@@ -390,7 +395,7 @@ void CompilationEngine::compileVarDec()
 				(this->tokenizer.keyWord() != "boolean") &&
 				(this->tokenizer.tokenType() != "identifier"))
 			{
-				std::cout<<"compileVarDec error, found a token but it's not a type it's :"<<this->tokenizer.tokenType()<<std::endl;
+				std::cout<<"compileVarDec ERROR, found a token but it's not a type it's :"<<this->tokenizer.tokenType()<<std::endl;
 				break;		
 			}
 			
@@ -405,7 +410,7 @@ void CompilationEngine::compileVarDec()
 			else
 			{
 				//abort
-				std::cout<<"compileVarDec error didn't find end of line ; after classVarDec"<<std::endl;
+				std::cout<<"compileVarDec ERROR didn't find end of line ; after classVarDec"<<std::endl;
 				break;
 			}
 			
@@ -431,7 +436,7 @@ void CompilationEngine::compileVarDecLL(int indentLevel)
 			(this->tokenizer.keyWord() != "boolean") &&
 			(this->tokenizer.tokenType() != "identifier"))
 		{
-			std::cout<<"compileVarDec error, found a token but it's not a type"<<std::endl;		
+			std::cout<<"compileVarDec ERROR, found a token but it's not a type"<<std::endl;		
 		}
 		//the Type is a known type
 		if(this->tokenizer.tokenType() == "keyword")
@@ -457,7 +462,7 @@ void CompilationEngine::compileVarDecLL(int indentLevel)
 		}
 		else
 		{
-			std::cout<<"compileVarDec error, found a token but it's not an identifier varName"<<std::endl;	
+			std::cout<<"compileVarDec ERROR, found a token but it's not an identifier varName"<<std::endl;	
 		}
 
 		//now looking for (, type VarName)* construct
@@ -480,7 +485,7 @@ void CompilationEngine::compileVarDecLL(int indentLevel)
 					(this->tokenizer.keyWord() != "boolean") &&
 					(this->tokenizer.tokenType() != "identifier"))
 				{
-					std::cout<<"compileVarDec error, found a token but it's not a type"<<std::endl;		
+					std::cout<<"compileVarDec ERROR, found a token but it's not a type"<<std::endl;		
 				}
 				//the Type is a known type
 				if(this->tokenizer.tokenType() == "keyword")
@@ -554,7 +559,7 @@ void CompilationEngine::compileStatements(int indentLevel)
 
 		else
 		{
-			std::cout<<"compileStatements error"<<std::endl;
+			std::cout<<"compileStatements ERROR"<<std::endl;
 			std::cout<<"compileStatements currentToken1 : "<<this->tokenizer.getCurrentToken()<<std::endl;
 			std::cout<<"compileStatements tokenType : "<<this->tokenizer.tokenType()<<std::endl;
 			break;
@@ -581,7 +586,7 @@ void CompilationEngine::compileLet(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileLet error : keyword is not let"<<std::endl;
+		std::cout<<"compileLet ERROR : keyword is not let"<<std::endl;
 	}
 
 
@@ -594,7 +599,7 @@ void CompilationEngine::compileLet(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileLet error : did not find identifier var name"<<std::endl;
+		std::cout<<"compileLet ERROR : did not find identifier var name"<<std::endl;
 	}
 
 	//we might find [expression] now
@@ -623,7 +628,7 @@ void CompilationEngine::compileLet(int indentLevel)
 		}
 		else
 		{
-			std::cout<<"compileLet error : found [ but not ]"<<std::endl;
+			std::cout<<"compileLet ERROR : found [ but not ]"<<std::endl;
 		}
 	}
 
@@ -638,7 +643,7 @@ void CompilationEngine::compileLet(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileLet error : = not found in letStatement"<<std::endl;
+		std::cout<<"compileLet ERROR : = not found in letStatement"<<std::endl;
 	}
 
 	//must find an expression
@@ -655,7 +660,7 @@ void CompilationEngine::compileLet(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileLet error : ; not found in letStatement"<<std::endl;
+		std::cout<<"compileLet ERROR : ; not found in letStatement, found "<<this->tokenizer.getCurrentToken()<<std::endl;
 	}
 
 	this->writeCloseMK("letStatement", indentLevel); 
@@ -676,7 +681,7 @@ void CompilationEngine::compileIf(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileIf error : keyword is not if"<<std::endl;
+		std::cout<<"compileIf ERROR : keyword is not if"<<std::endl;
 	}
 
 	//we must find ( now
@@ -690,7 +695,7 @@ void CompilationEngine::compileIf(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileIf error : didn't find ( in ifStatement"<<std::endl;
+		std::cout<<"compileIf ERROR : didn't find ( in ifStatement"<<std::endl;
 	}
 
 	//must find an expression
@@ -708,7 +713,7 @@ void CompilationEngine::compileIf(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileIf error : ) not found in ifStatement"<<std::endl;
+		std::cout<<"compileIf ERROR : ) not found in ifStatement"<<std::endl;
 	}
 
 	//must find {
@@ -722,7 +727,7 @@ void CompilationEngine::compileIf(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileIf error : { not found in ifStatement"<<std::endl;
+		std::cout<<"compileIf ERROR : { not found in ifStatement"<<std::endl;
 	}
 
 	//might find statements
@@ -741,7 +746,7 @@ void CompilationEngine::compileIf(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileIf error : } not found in ifStatement"<<std::endl;
+		std::cout<<"compileIf ERROR : } not found in ifStatement"<<std::endl;
 	}
 
 	//can find else
@@ -763,7 +768,7 @@ void CompilationEngine::compileIf(int indentLevel)
 		}
 		else
 		{
-			std::cout<<"compileIf error : { not found in elseStatement"<<std::endl;
+			std::cout<<"compileIf ERROR : { not found in elseStatement"<<std::endl;
 		}
 
 		//might find statements
@@ -781,7 +786,7 @@ void CompilationEngine::compileIf(int indentLevel)
 		}
 		else
 		{
-			std::cout<<"compileIf error : } not found in elseStatement"<<std::endl;
+			std::cout<<"compileIf ERROR : } not found in elseStatement"<<std::endl;
 		}
 	}
 
@@ -803,7 +808,7 @@ void CompilationEngine::compileWhile(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileWhile error : keyword is not while"<<std::endl;
+		std::cout<<"compileWhile ERROR : keyword is not while"<<std::endl;
 	}
 
 	//we must find ( now
@@ -817,7 +822,7 @@ void CompilationEngine::compileWhile(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileWhile error : didn't find ( in whileStatement"<<std::endl;
+		std::cout<<"compileWhile ERROR : didn't find ( in whileStatement"<<std::endl;
 		
 	}
 
@@ -836,7 +841,7 @@ void CompilationEngine::compileWhile(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileWhile error : ) not found in whileStatement"<<std::endl;
+		std::cout<<"compileWhile ERROR : ) not found in whileStatement"<<std::endl;
 	}
 
 	//must find {
@@ -850,7 +855,7 @@ void CompilationEngine::compileWhile(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileWhile error : { not found in whileStatement"<<std::endl;
+		std::cout<<"compileWhile ERROR : { not found in whileStatement"<<std::endl;
 	}
 
 	//might find statements
@@ -865,7 +870,7 @@ void CompilationEngine::compileWhile(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileWhile error : } not found in whileStatement"<<std::endl;
+		std::cout<<"compileWhile ERROR : } not found in whileStatement"<<std::endl;
 	}
 
 	this->writeCloseMK("whileStatement", indentLevel);
@@ -885,7 +890,7 @@ void CompilationEngine::compileDo(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileDo error : keyword is not do"<<std::endl;
+		std::cout<<"compileDo ERROR : keyword is not do"<<std::endl;
 	}
 
 	//must find subroutineCall
@@ -902,7 +907,7 @@ void CompilationEngine::compileDo(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileDo error : ; not found in doStatement"<<std::endl;
+		std::cout<<"compileDo ERROR : ; not found in doStatement"<<std::endl;
 	}
 
 	this->writeCloseMK("doStatement", indentLevel);
@@ -923,7 +928,7 @@ void CompilationEngine::compileReturn(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileReturn error : keyword is not return"<<std::endl;
+		std::cout<<"compileReturn ERROR : keyword is not return"<<std::endl;
 	}
 
 	//might find expression
@@ -941,7 +946,7 @@ void CompilationEngine::compileReturn(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileReturn error : ; not found in returnStatement"<<std::endl;
+		std::cout<<"compileReturn ERROR : ; not found in returnStatement"<<std::endl;
 	}
 
 	this->writeCloseMK("returnStatement", indentLevel);
@@ -994,6 +999,8 @@ void CompilationEngine::compileTerm(int indentLevel)
 	if (this->tokenizer.tokenType() == "int")
 	{
 		this->writeMKToFile(this->tokenizer.intVal(), "integerConstant", indentLevel + 1);
+		//skip the comments
+		this->advance();	
 	}
 
 	//string Constant
@@ -1037,7 +1044,7 @@ void CompilationEngine::compileTerm(int indentLevel)
 		this->advance();
 
 		//if this token is [ or . or (
-		if ((this->tokenizer.tokenType() == "symbol") && (this->tokenizer.symbol() == ','))
+		if (this->tokenizer.tokenType() == "symbol")
 		{
 			if(this->tokenizer.symbol() == '[')
 			{
@@ -1057,10 +1064,12 @@ void CompilationEngine::compileTerm(int indentLevel)
 					&& (this->tokenizer.symbol()==']'))
 				{
 					this->writeMKToFile(this->tokenizer.symbol(), "symbol", indentLevel + 1);
+					//skip the comments
+					this->advance();
 				}
 				else
 				{
-					std::cout<<"compileTerm error : didn't find ] at the end of array use"<<std::endl;
+					std::cout<<"compileTerm ERROR : didn't find ] at the end of array use"<<std::endl;
 				}
 
 			}
@@ -1074,8 +1083,6 @@ void CompilationEngine::compileTerm(int indentLevel)
 				//it's a subroutine Call
 				//object.subroutine()
 
-				//object
-				this->writeMKToFile(this->tokenizer.identifier(), "identifier", indentLevel + 1);
 				// .
 				this->writeMKToFile(this->tokenizer.symbol(), "symbol", 7);
 
@@ -1085,12 +1092,13 @@ void CompilationEngine::compileTerm(int indentLevel)
 				//subroutine name
 				if (this->tokenizer.tokenType()!="identifier")
 				{
-					std::cout<<"compileTerm error : didn't find identifier after ."<<std::endl;
+					std::cout<<"compileTerm ERROR : didn't find identifier after ."<<std::endl;
 				}
 
 				//it's a subroutine call
 				this->compileSubroutineCall(indentLevel+1);
-	
+				//skip the comments
+				this->advance();	
 			}
 		}
 	}
@@ -1113,7 +1121,7 @@ void CompilationEngine::compileTerm(int indentLevel)
 		}
 		else
 		{
-			std::cout<<"compileTerm error : didn't find ) at the end of (expression)"<<std::endl;
+			std::cout<<"compileTerm ERROR : didn't find ) at the end of (expression)"<<std::endl;
 		}
 	}
 
@@ -1131,6 +1139,8 @@ void CompilationEngine::compileTerm(int indentLevel)
 		this->compileTerm(indentLevel+1);
 	}
 
+	std::cout<<"compileTerm:: end :: currentToken :: "<<this->tokenizer.getCurrentToken()<<std::endl;	
+	
 	this->writeCloseMK("term", indentLevel);
 }
 
@@ -1172,7 +1182,7 @@ void CompilationEngine::compileExpressionList(int indentLevel)
 			this->compileExpression(indentLevel+1);
 		}
 	}
-
+	std::cout<<"compileExpressionList:: end :: currentToken :: "<<this->tokenizer.getCurrentToken()<<std::endl;
 	this->writeCloseMK("expressionList", indentLevel);
 }
 
@@ -1189,7 +1199,7 @@ void CompilationEngine::compileSubroutineCall(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileSubroutineCall error : no identifier found"<<std::endl;
+		std::cout<<"compileSubroutineCall ERROR : no identifier found"<<std::endl;
 	}
 
 	//find .
@@ -1211,7 +1221,7 @@ void CompilationEngine::compileSubroutineCall(int indentLevel)
 		}	
 		else
 		{
-			std::cout<<"compileSubroutineCall error : didn't find identifier after . in subroutineCall"<<std::endl;
+			std::cout<<"compileSubroutineCall ERROR : didn't find identifier after . in subroutineCall"<<std::endl;
 		}
 	}
 	// find (
@@ -1225,7 +1235,7 @@ void CompilationEngine::compileSubroutineCall(int indentLevel)
 	}	
 	else
 	{
-		std::cout<<"compileSubroutineCall error : didn't find ( at the start of subroutineCall"<<std::endl;
+		std::cout<<"compileSubroutineCall ERROR : didn't find ( at the start of subroutineCall"<<std::endl;
 	}
 	
 	//expressionList				
@@ -1239,7 +1249,7 @@ void CompilationEngine::compileSubroutineCall(int indentLevel)
 	}
 	else
 	{
-		std::cout<<"compileSubroutineCall error : didn't find ) at the end of subroutineCall"<<std::endl;
+		std::cout<<"compileSubroutineCall ERROR : didn't find ) at the end of subroutineCall but found "<<this->tokenizer.getCurrentToken()<<std::endl;
 	}
 }
 
@@ -1293,7 +1303,7 @@ void CompilationEngine::compileOp(int indentLevel)
 	}
 	else 
 	{
-		std::cout<<"compileOp error : didn't find an operator"<<std::endl;
+		std::cout<<"compileOp ERROR : didn't find an operator"<<std::endl;
 	}
 }
 
